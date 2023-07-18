@@ -2,6 +2,7 @@ import {
   GraphQLFloat,
   GraphQLID,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql/type/index.js';
@@ -22,6 +23,7 @@ import {
 } from '../resolvers/user.resolver.js';
 import { USER, UUID } from '../../models/parent.model.js';
 import { IncomingMessage, ServerResponse } from 'http';
+import { UUIDType } from '../../types/uuid.js';
 
 export const UserType: GraphQLObjectType<
   USER,
@@ -66,7 +68,7 @@ export const Users = {
 
 export const User = {
   type: UserType,
-  args: { id: { type: GraphQLID } },
+  args: { id: { type: new GraphQLNonNull(UUIDType) } },
   resolve: async (parent, { id }: UUID, context: FastifyInstance) => {
     return context.prisma.user.findUnique({ where: { id } });
   },

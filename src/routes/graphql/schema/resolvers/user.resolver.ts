@@ -6,12 +6,26 @@ export const postResolver = async (parent: USER, args, context: FastifyInstance)
 };
 
 export const userSubToResolver = async (parent: USER, args, context: FastifyInstance) => {
-  return context.prisma.subscribersOnAuthors.findMany({ where: { authorId: parent.id } });
+  return context.prisma.user.findMany({
+    where: {
+      subscribedToUser: {
+        some: {
+          subscriberId: parent.id,
+        },
+      },
+    },
+  });
 };
 
 export const subToUserResolver = async (parent: USER, args, context: FastifyInstance) => {
-  return context.prisma.subscribersOnAuthors.findMany({
-    where: { subscriberId: parent.id },
+  return context.prisma.user.findMany({
+    where: {
+      userSubscribedTo: {
+        some: {
+          authorId: parent.id,
+        },
+      },
+    },
   });
 };
 export const profileResolver = async (parent: USER, args, context: FastifyInstance) => {

@@ -1,6 +1,7 @@
 import {
   GraphQLID,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql/type/index.js';
@@ -8,6 +9,7 @@ import { FastifyInstance } from 'fastify';
 import { UUID } from '../../models/parent.model.js';
 import { UserType } from '../user/user.query.js';
 import { profileToPostResolver } from '../resolvers/post.resolver.js';
+import { UUIDType } from '../../types/uuid.js';
 
 export const PostType = new GraphQLObjectType({
   name: 'post',
@@ -32,7 +34,7 @@ export const Posts = {
 
 export const Post = {
   type: PostType,
-  args: { id: { type: GraphQLID } },
+  args: { id: { type: new GraphQLNonNull(UUIDType) } },
   resolve: async (parent, { id }: UUID, context: FastifyInstance) => {
     return context.prisma.post.findUnique({ where: { id } });
   },

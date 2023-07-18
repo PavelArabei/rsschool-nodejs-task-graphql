@@ -3,6 +3,7 @@ import {
   GraphQLID,
   GraphQLInt,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
 } from 'graphql/type/index.js';
 import {
@@ -16,6 +17,7 @@ import { UserType } from '../user/user.query.js';
 import { memberResolver, userResolver } from '../resolvers/profile.resolver.js';
 import { MemberType } from '../member/member.query.js';
 import { IncomingMessage, ServerResponse } from 'http';
+import { UUIDType } from '../../types/uuid.js';
 
 export const ProfileType: GraphQLObjectType<
   PROFILE,
@@ -54,7 +56,7 @@ export const Profiles = {
 
 export const Profile = {
   type: ProfileType,
-  args: { id: { type: GraphQLID } },
+  args: { id: { type: new GraphQLNonNull(UUIDType) } },
   resolve: async (parent, { id }: UUID, context: FastifyInstance) => {
     return context.prisma.profile.findUnique({ where: { id } });
   },
