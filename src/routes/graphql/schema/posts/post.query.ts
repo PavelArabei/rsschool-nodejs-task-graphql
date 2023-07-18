@@ -4,8 +4,10 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql/type/index.js';
-import { ID } from '../../../models/user.model.js';
 import { FastifyInstance } from 'fastify';
+import { UUID } from '../../models/parent.model.js';
+import { UserType } from '../user/user.query.js';
+import { profileToPostResolver } from '../resolvers/post.resolver.js';
 
 export const PostType = new GraphQLObjectType({
   name: 'post',
@@ -14,12 +16,16 @@ export const PostType = new GraphQLObjectType({
     title: { type: GraphQLString },
     content: { type: GraphQLString },
     authorId: { type: GraphQLString },
+    user: {
+      type: UserType,
+      resolve: profileToPostResolver,
+    },
   }),
 });
 
 export const Posts = {
   type: new GraphQLList(PostType),
-  resolve: async (parent, args: ID, context: FastifyInstance) => {
+  resolve: async (parent, args: UUID, context: FastifyInstance) => {
     return context.prisma.post.findMany();
   },
 };
@@ -27,7 +33,7 @@ export const Posts = {
 export const Post = {
   type: PostType,
   args: { id: { type: GraphQLID } },
-  resolve: async (parent, { id }: ID, context: FastifyInstance) => {
+  resolve: async (parent, { id }: UUID, context: FastifyInstance) => {
     return context.prisma.post.findUnique({ where: { id } });
   },
 };

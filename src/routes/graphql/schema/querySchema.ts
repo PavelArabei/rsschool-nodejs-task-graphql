@@ -9,8 +9,8 @@ export const Query = new GraphQLObjectType({
   fields: {
     user: User,
     users: Users,
-    member: Member,
-    members: Members,
+    memberType: Member,
+    memberTypes: Members,
     post: Post,
     posts: Posts,
     profile: Profile,
