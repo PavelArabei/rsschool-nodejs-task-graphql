@@ -7,7 +7,7 @@ import {
   GraphQLString,
 } from 'graphql/type/index.js';
 import { FastifyInstance } from 'fastify';
-import { CreateUser } from '../../models/mutation.model.js';
+import { CreateUser, UpdateUser } from '../../models/mutation.model.js';
 import { UUIDType } from '../../types/uuid.js';
 import { USER } from '../../models/parent.model.js';
 
@@ -16,6 +16,15 @@ const CreateUserInput = new GraphQLInputObjectType({
   fields: () => ({
     name: { type: new GraphQLNonNull(GraphQLString) },
     balance: { type: new GraphQLNonNull(GraphQLFloat) },
+  }),
+});
+
+const ChangeUserInput = new GraphQLInputObjectType({
+  name: 'ChangeUserInput',
+  fields: () => ({
+    id: { type: UUIDType },
+    name: { type: UUIDType },
+    balance: { type: GraphQLFloat },
   }),
 });
 
@@ -41,5 +50,16 @@ export const deleteUser = {
     } catch (err) {
       return err;
     }
+  },
+};
+
+export const changeUser = {
+  type: UserType,
+  args: {
+    id: { type: new GraphQLNonNull(UUIDType) },
+    dto: { type: new GraphQLNonNull(ChangeUserInput) },
+  },
+  resolve(parent, { id, dto }: UpdateUser, context: FastifyInstance) {
+    return context.prisma.user.update({ where: { id }, data: dto });
   },
 };

@@ -5,17 +5,11 @@ import {
   GraphQLInt,
   GraphQLNonNull,
 } from 'graphql/type/index.js';
-import { CreateProfile } from '../../models/mutation.model.js';
+import { CreateProfile, UpdateProfile } from '../../models/mutation.model.js';
 import { FastifyInstance } from 'fastify';
 import { UUIDType } from '../../types/uuid.js';
 import { ProfileType } from './profile.query.js';
 import { PROFILE } from '../../models/parent.model.js';
-
-//
-// isMale: { type: GraphQLBoolean },
-// yearOfBirth: { type: GraphQLInt },
-// userId: { type: GraphQLID },
-// memberTypeId: { type: GraphQLID },
 
 const CreateProfileInput = new GraphQLInputObjectType({
   name: 'CreateProfileInput',
@@ -27,6 +21,15 @@ const CreateProfileInput = new GraphQLInputObjectType({
   }),
 });
 
+const ChangeProfileInput = new GraphQLInputObjectType({
+  name: 'ChangeProfileInput',
+  fields: () => ({
+    id: { type: UUIDType },
+    memberTypeId: { type: GraphQLID },
+    yearOfBirth: { type: GraphQLInt },
+    isMale: { type: GraphQLBoolean },
+  }),
+});
 export const createProfile = {
   type: ProfileType,
   args: {
@@ -49,5 +52,19 @@ export const deleteProfile = {
     } catch (err) {
       return err;
     }
+  },
+};
+
+export const changeProfile = {
+  type: ProfileType,
+  args: {
+    id: { type: new GraphQLNonNull(UUIDType) },
+    dto: { type: new GraphQLNonNull(ChangeProfileInput) },
+  },
+  resolve(parent, { id, dto }: UpdateProfile, context: FastifyInstance) {
+    return context.prisma.profile.update({
+      where: { id },
+      data: dto,
+    });
   },
 };

@@ -4,7 +4,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql/type/index.js';
-import { CreatePost } from '../../models/mutation.model.js';
+import { CreatePost, UpdatePost } from '../../models/mutation.model.js';
 import { FastifyInstance } from 'fastify';
 import { UUIDType } from '../../types/uuid.js';
 import { PostType } from './post.query.js';
@@ -16,6 +16,16 @@ const CreatePostInput = new GraphQLInputObjectType({
     authorId: { type: new GraphQLNonNull(UUIDType) },
     title: { type: new GraphQLNonNull(GraphQLString) },
     content: { type: new GraphQLNonNull(GraphQLString) },
+  }),
+});
+
+const ChangePostInput = new GraphQLInputObjectType({
+  name: 'ChangePostInput',
+  fields: () => ({
+    id: { type: UUIDType },
+    title: { type: GraphQLString },
+    content: { type: GraphQLString },
+    authorId: { type: UUIDType },
   }),
 });
 
@@ -41,5 +51,16 @@ export const deletePost = {
     } catch (err) {
       return err;
     }
+  },
+};
+
+export const changePost = {
+  type: PostType,
+  args: {
+    id: { type: new GraphQLNonNull(UUIDType) },
+    dto: { type: new GraphQLNonNull(ChangePostInput) },
+  },
+  resolve(parent, { id, dto }: UpdatePost, context: FastifyInstance) {
+    return context.prisma.post.update({ where: { id }, data: dto });
   },
 };
