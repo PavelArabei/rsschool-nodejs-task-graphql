@@ -10,13 +10,6 @@ const SubscribeToType = new GraphQLObjectType({
   }),
 });
 
-const UnsubscribeFromType = new GraphQLObjectType({
-  name: 'unsubscribeFrom',
-  fields: () => ({
-    id: { type: UUIDType },
-  }),
-});
-
 export const subscribeTo = {
   type: SubscribeToType,
   args: {
