@@ -5,10 +5,11 @@ import {
   GraphQLInt,
   GraphQLNonNull,
 } from 'graphql/type/index.js';
-import { UserType } from '../user/user.query.js';
 import { CreateProfile } from '../../models/mutation.model.js';
 import { FastifyInstance } from 'fastify';
 import { UUIDType } from '../../types/uuid.js';
+import { ProfileType } from './profile.query.js';
+import { PROFILE } from '../../models/parent.model.js';
 
 //
 // isMale: { type: GraphQLBoolean },
@@ -27,11 +28,26 @@ const CreateProfileInput = new GraphQLInputObjectType({
 });
 
 export const createProfile = {
-  type: UserType,
+  type: ProfileType,
   args: {
     dto: { type: new GraphQLNonNull(CreateProfileInput) },
   },
   resolve(parent, { dto }: CreateProfile, context: FastifyInstance) {
     return context.prisma.profile.create({ data: dto });
+  },
+};
+
+export const deleteProfile = {
+  type: GraphQLBoolean,
+  args: {
+    id: { type: new GraphQLNonNull(UUIDType) },
+  },
+  resolve: async (parent, { id }: PROFILE, context: FastifyInstance) => {
+    try {
+      await context.prisma.profile.delete({ where: { id } });
+      return null;
+    } catch (err) {
+      return err;
+    }
   },
 };

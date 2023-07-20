@@ -1,5 +1,6 @@
 import { UserType } from './user.query.js';
 import {
+  GraphQLBoolean,
   GraphQLFloat,
   GraphQLInputObjectType,
   GraphQLNonNull,
@@ -7,6 +8,8 @@ import {
 } from 'graphql/type/index.js';
 import { FastifyInstance } from 'fastify';
 import { CreateUser } from '../../models/mutation.model.js';
+import { UUIDType } from '../../types/uuid.js';
+import { USER } from '../../models/parent.model.js';
 
 const CreateUserInput = new GraphQLInputObjectType({
   name: 'CreateUserInput',
@@ -23,5 +26,20 @@ export const createUser = {
   },
   resolve(parent, { dto }: CreateUser, context: FastifyInstance) {
     return context.prisma.user.create({ data: dto });
+  },
+};
+
+export const deleteUser = {
+  type: GraphQLBoolean,
+  args: {
+    id: { type: new GraphQLNonNull(UUIDType) },
+  },
+  resolve: async (parent, { id }: USER, context: FastifyInstance) => {
+    try {
+      await context.prisma.user.delete({ where: { id } });
+      return null;
+    } catch (err) {
+      return err;
+    }
   },
 };
