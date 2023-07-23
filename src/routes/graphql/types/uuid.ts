@@ -29,3 +29,25 @@ export const UUIDType = new GraphQLScalarType({
     return undefined;
   },
 });
+
+export const MemberTypeId = new GraphQLScalarType({
+  name: 'MemberTypeId',
+  serialize(value) {
+    if (typeof value !== 'string') {
+      throw new TypeError(`Invalid MemberTypeId.`);
+    }
+    return value;
+  },
+  parseValue(value) {
+    if (typeof value !== 'string') {
+      throw new TypeError(`Invalid MemberTypeId.`);
+    }
+    return value;
+  },
+  parseLiteral(ast) {
+    if (ast.kind === Kind.STRING) {
+      return ast.value;
+    }
+    return undefined;
+  },
+});
