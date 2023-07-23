@@ -20,6 +20,7 @@ export const AuthorType = new GraphQLObjectType({
       type: new GraphQLList(SubscriberType),
       resolve: subToUserResolver,
     },
+    userSubscribedTo: { type: new GraphQLList(AuthorType), resolve: userSubToResolver },
   }),
 });
 export const SubscriberType: GraphQLObjectType<
@@ -32,7 +33,7 @@ export const SubscriberType: GraphQLObjectType<
     FastifyTypeProviderDefault
   >
 > = new GraphQLObjectType({
-  name: 'subscriberId',
+  name: 'userSubscribedTo',
   fields: () => ({
     id: { type: GraphQLID },
     userSubscribedTo: { type: new GraphQLList(AuthorType), resolve: userSubToResolver },
